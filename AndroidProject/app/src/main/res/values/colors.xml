@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors - Vibrant Teal/Cyan for Progress & Growth -->
+    <color name="primary_main">#00ACC1</color>          <!-- Vivid Cyan - Main brand color -->
+    <color name="primary_dark">#00838F</color>          <!-- Deep Cyan - For status bar -->
+    <color name="primary_light">#26C6DA</color>         <!-- Bright Cyan - Subtle backgrounds -->
+
+    <!-- Secondary Colors - Bold Green for Success & Achievement -->
+    <color name="secondary_main">#43A047</color>        <!-- Bold Green - Accent & success -->
+    <color name="secondary_dark">#2E7D32</color>        <!-- Forest Green - Pressed states -->
+    <color name="secondary_light">#66BB6A</color>       <!-- Lime Green - Highlights -->
+
+    <!-- Neutral Colors -->
+    <color name="background_light">#FAFAFA</color>      <!-- Almost white background -->
+    <color name="surface_light">#FFFFFF</color>         <!-- White surface (cards, etc) -->
+    <color name="background_dark">#121212</color>       <!-- Dark mode background -->
+    <color name="surface_dark">#1E1E1E</color>          <!-- Dark mode surface -->
+
+    <!-- Text Colors -->
+    <color name="text_primary_light">#212121</color>    <!-- Almost black text -->
+    <color name="text_secondary_light">#757575</color>  <!-- Gray text -->
+    <color name="text_primary_dark">#FFFFFF</color>     <!-- White text for dark mode -->
+    <color name="text_secondary_dark">#B0B0B0</color>   <!-- Light gray for dark mode -->
+
+    <!-- Semantic Colors -->
+    <color name="error">#F44336</color>                 <!-- Red for errors -->
+    <color name="warning">#FF9800</color>               <!-- Orange for warnings -->
+    <color name="success">#4CAF50</color>               <!-- Green for success -->
+    <color name="info">#2196F3</color>                  <!-- Blue for info -->
+
+    <!-- Basic Colors -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- Legacy colors for compatibility (if needed) -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+</resources>
