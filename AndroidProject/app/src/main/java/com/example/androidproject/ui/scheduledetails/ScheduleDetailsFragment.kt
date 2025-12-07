@@ -269,14 +269,30 @@ class ScheduleDetailsFragment : Fragment() {
 
         // Progress overview
         val progress = schedule.progress ?: emptyList()
-        if (progress.isNotEmpty()) {
+        val targetDuration = schedule.durationMinutes ?: 0
+
+        if (progress.isNotEmpty() && targetDuration > 0) {
+            // Calculate total logged time from all progress entries
+            val totalLoggedTime = progress.sumOf { it.loggedTime ?: 0 }
+
+            // Calculate percentage based on logged time vs target duration
+            val percentage = ((totalLoggedTime * 100) / targetDuration).coerceIn(0, 100)
+
+            binding.progressBarCompletion.progress = percentage
+            binding.tvProgressPercentage.text = "$percentage% Completed ($totalLoggedTime / $targetDuration min)"
+
+            // Display recent activities
+            progressAdapter.submitList(progress.sortedByDescending { it.date })
+            binding.rvRecentActivities.visibility = View.VISIBLE
+            binding.tvNoActivities.visibility = View.GONE
+        } else if (progress.isNotEmpty() && targetDuration == 0) {
+            // If no target duration is set, fall back to counting completed entries
             val completedCount = progress.count { it.isCompleted }
             val percentage = (completedCount * 100) / progress.size
             
             binding.progressBarCompletion.progress = percentage
             binding.tvProgressPercentage.text = "$percentage% Completed ($completedCount/${progress.size})"
             
-            // Display recent activities
             progressAdapter.submitList(progress.sortedByDescending { it.date })
             binding.rvRecentActivities.visibility = View.VISIBLE
             binding.tvNoActivities.visibility = View.GONE
@@ -327,22 +343,54 @@ class ScheduleDetailsFragment : Fragment() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_add_progress, null)
 
         val tvInfo = dialogView.findViewById<android.widget.TextView>(R.id.tvScheduleInfo)
+        val etLoggedTime = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(
+            R.id.etLoggedTime
+        )
+        val etNotes = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(
+            R.id.etProgressNotes
+        )
+        val cbCompleted = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(
+            R.id.cbCompleted
+        )
+
         tvInfo.text = "Add Progress: ${schedule.habit?.name ?: "Schedule"}"
+
+        // Calculate existing logged time
+        val existingLoggedTime = schedule.progress?.sumOf { it.loggedTime ?: 0 } ?: 0
+        val targetDuration = schedule.durationMinutes ?: 0
+
+        // Initially disable the completed checkbox
+        cbCompleted.isEnabled = false
+        cbCompleted.isChecked = false
+
+        // Add text change listener to enable/check completed checkbox based on total time
+        etLoggedTime.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                val newLoggedTime = s.toString().toIntOrNull() ?: 0
+                val totalLoggedTime = existingLoggedTime + newLoggedTime
+
+                if (targetDuration > 0) {
+                    // Enable and auto-check if total time meets or exceeds target
+                    if (totalLoggedTime >= targetDuration) {
+                        cbCompleted.isEnabled = true
+                        cbCompleted.isChecked = true
+                    } else {
+                        cbCompleted.isEnabled = false
+                        cbCompleted.isChecked = false
+                    }
+                } else {
+                    // If no target duration, allow manual checking
+                    cbCompleted.isEnabled = true
+                }
+            }
+        })
 
         MaterialAlertDialogBuilder(requireContext())
             .setTitle("Add Progress")
             .setView(dialogView)
             .setPositiveButton("Save") { dialog, _ ->
-                val etLoggedTime = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(
-                    R.id.etLoggedTime
-                )
-                val etNotes = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(
-                    R.id.etProgressNotes
-                )
-                val cbCompleted = dialogView.findViewById<com.google.android.material.checkbox.MaterialCheckBox>(
-                    R.id.cbCompleted
-                )
-
                 val loggedTime = etLoggedTime.text.toString().toIntOrNull()
                 val notes = etNotes.text.toString().takeIf { it.isNotBlank() }
                 val isCompleted = if (cbCompleted.isChecked) true else null
